@@ -1,6 +1,6 @@
 export interface PokemonApiResponse {
   id: number;
-  nome: string;
+  name: string;
   height: number;
   weight: number;
   types: {

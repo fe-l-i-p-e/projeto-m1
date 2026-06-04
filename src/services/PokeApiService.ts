@@ -23,7 +23,7 @@ export async function PokeBusca(
         // Mapeia PokemonApiResponse → Pokeresumo
         const pokeresumo: Pokeresumo = {
           id: data.id,
-          nome: data.nome,
+          nome: data.name,
           tipos: data.types.map((t) => t.type.name),
           altura: data.height,
           peso: data.weight,

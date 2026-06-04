@@ -36,7 +36,7 @@ export async function savePokemon(pokemon: Pokeresumo) {
   );
   if (usuarioExisteArquivo) {
     console.log(
-      `O Pokemon informado "${pokemon.nome}" já existe e não será gravado no arquivo`,
+      `O Pokemon "${pokemon.nome}" já está registrado em sua Pokédex `,
     );
     return;
   }
