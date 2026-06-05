@@ -17,7 +17,7 @@ export class TerminalController {
       console.log('\n________________________\n ');
 
       const respostaOperacao = await this.interfaceConsole.question(
-        'Digite o nome ou ID do Pokémon que deseja buscar na pokédex:\n',
+        'Digite o nome ou ID do Pokémon que deseja buscar:\n',
       );
 
       const pokemon = await PokeBusca(respostaOperacao);
