@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { Pokeresumo } from '../models/CatalogoPokemon';
 
-const URL_Database = `./pokedex.JSON`;
+const URL_Database = `./pc_box.JSON`;
 
 async function lerPokedex(): Promise<Pokeresumo[]> {
   try {
