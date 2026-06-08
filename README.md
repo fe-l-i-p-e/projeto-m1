@@ -21,7 +21,7 @@ Praticar os principais conceitos do Módulo 01: Node.js e JavaScript no back-end
 - Node.js (v18 ou superior)
 - npm
 - Git
-
+- tsx@4.22.4
 ## Como instalar
 
 Clone o repositório:
