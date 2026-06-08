@@ -2,7 +2,7 @@ import { createInterface, Interface } from 'node:readline/promises';
 import { stdin, stdout } from 'process';
 
 import { PokeBusca } from '../services/PokeApiService';
-import { savePokemon } from '../services/SalvarPokemon';
+import { savePokemon, removePokemon, removeAllPokemons } from '../services/SalvarPokemon';
 import { showAll, showOne, exibirPokemon } from '../services/searchPokedex';
 
 export class TerminalController {
@@ -59,7 +59,6 @@ export class TerminalController {
       );
 
       if (respostaMostrar.trim().toUpperCase() === 'S') {
-        // ── Busca específica ──────────────────────────────────────
         const respostaPoke = await this.interfaceConsole.question(
           'Digite o nome ou ID do Pokémon:\n',
         );
@@ -68,20 +67,59 @@ export class TerminalController {
 
         if (!encontrado) {
           console.log('Pokémon não encontrado na sua Pokédex.');
-        } else {
-          exibirPokemon(encontrado);
+          return;
         }
-      } else {
-        // ── Mostrar todos ─────────────────────────────────────────
+
+        exibirPokemon(encontrado);
+      }
+
+      if (respostaMostrar.trim().toUpperCase() === 'N') {
         const todos = await showAll();
 
         if (todos.length === 0) {
           console.log('Sua Pokédex está vazia.');
-        } else {
-          console.log(`\n══ SUA POKÉDEX (${todos.length} capturado(s)) ══`);
-          todos.forEach(exibirPokemon);
+          return;
         }
+
+        console.log(`\n══ SUA POKÉDEX (${todos.length} capturado(s)) ══`);
+        todos.forEach(exibirPokemon);
       }
+
+      // ── Remoção ───────────────────────────────────────────────
+      const respostaRemover = await this.interfaceConsole.question(
+        '\nDeseja remover algum Pokémon da Pokédex? (S/N):\n',
+      );
+
+      if (respostaRemover.trim().toUpperCase() !== 'S') {
+        console.log('Até a próxima, treinador!');
+        return;
+      }
+
+      const respostaTipoRemocao = await this.interfaceConsole.question(
+        'Remover um Pokémon específico ou todos? (E = específico / T = todos):\n',
+      );
+
+      if (respostaTipoRemocao.trim().toUpperCase() === 'T') {
+        const confirmacao = await this.interfaceConsole.question(
+          'Tem certeza que deseja esvaziar toda a Pokédex? (S/N):\n',
+        );
+
+        if (confirmacao.trim().toUpperCase() !== 'S') {
+          console.log('Operação cancelada.');
+          return;
+        }
+
+        await removeAllPokemons();
+        return;
+      }
+
+      if (respostaTipoRemocao.trim().toUpperCase() === 'E') {
+        const respostaPokeRemover = await this.interfaceConsole.question(
+          'Digite o nome ou ID do Pokémon que deseja remover:\n',
+        );
+        await removePokemon(respostaPokeRemover);
+      }
+
     } catch (_error) {
       console.log('\nFalha ao realizar o processo.');
     } finally {

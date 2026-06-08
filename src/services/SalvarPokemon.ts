@@ -1,49 +1,47 @@
 import { readFile, writeFile } from 'node:fs/promises';
-
 import { Pokeresumo } from '../models/CatalogoPokemon';
 
 const URL_Database = `./pokedex.JSON`;
 
-async function LerArquivo(): Promise<Pokeresumo[]> {
-  try {
-    const pokemonsRegistrados = await readFile(URL_Database, {
-      encoding: 'utf-8',
-    });
-    const parsed: unknown = JSON.parse(pokemonsRegistrados);
-    if (!Array.isArray(parsed)) {
-      console.error('Arquivo inválido: formato inesperado.');
-      return [];
-    }
-    return parsed as Pokeresumo[];
-  } catch {
-    console.error('Arquivo inválido, não foi possível ler os dados.');
-    return [];
+export async function savePokemon(pokemon: Pokeresumo): Promise<void> {
+  const pokemonsRegistrados = await readFile(URL_Database, { encoding: 'utf-8' });
+  const parsed: unknown = JSON.parse(pokemonsRegistrados);
+  const pokemons: Pokeresumo[] = Array.isArray(parsed) ? parsed : [];
+
+  const usuarioExisteArquivo = pokemons.some((p) => p.id === pokemon.id);
+
+  if (usuarioExisteArquivo) {
+    console.log(`O Pokemon "${pokemon.nome}" já está registrado em sua Pokédex`);
+    return;
   }
+
+  pokemons.push(pokemon);
+  await writeFile(URL_Database, JSON.stringify(pokemons, null, 2));
+  console.log(`Pokemon "${pokemon.nome}" registrado com sucesso em sua Pokédex!`);
 }
 
-export async function savePokemon(pokemon: Pokeresumo) {
-  const Pokemons = await LerArquivo();
+export async function removePokemon(identificador: string): Promise<void> {
+  const raw = await readFile(URL_Database, { encoding: 'utf-8' });
+  const parsed: unknown = JSON.parse(raw);
+  const pokemons: Pokeresumo[] = Array.isArray(parsed) ? parsed : [];
 
-  if (Pokemons.length === 0) {
-    await writeFile(URL_Database, JSON.stringify([pokemon]), {
-      encoding: 'utf-8',
-    });
-    console.log(`O Pokemon "${pokemon.nome}" foi registrado em sua Pokédex`);
-    return;
-  }
-  const usuarioExisteArquivo = Pokemons.some(
-    (Pokemons: Pokeresumo) => Pokemons.id == pokemon.id,
+  const normalizado = identificador.trim().toLowerCase();
+
+  const encontrado = pokemons.find(
+    (p) => p.nome.toLowerCase() === normalizado || p.id === Number(normalizado),
   );
-  if (usuarioExisteArquivo) {
-    console.log(
-      `O Pokemon "${pokemon.nome}" já está registrado em sua Pokédex `,
-    );
+
+  if (!encontrado) {
+    console.log(`[AVISO] Nenhum Pokémon encontrado com "${identificador}" na Pokédex.`);
     return;
   }
-  Pokemons.push(pokemon);
 
-  await writeFile(URL_Database, JSON.stringify(Pokemons), {
-    encoding: 'utf-8',
-  });
-  console.log(`O Pokemon "${pokemon.nome}" foi registrado em sua Pokédex`);
+  const atualizado = pokemons.filter((p) => p.id !== encontrado.id);
+  await writeFile(URL_Database, JSON.stringify(atualizado, null, 2));
+  console.log(`[OK] "${encontrado.nome}" foi removido da sua Pokédex.`);
+}
+
+export async function removeAllPokemons(): Promise<void> {
+  await writeFile(URL_Database, JSON.stringify([], null, 2));
+  console.log(`[OK] Sua Pokédex foi esvaziada.`);
 }
