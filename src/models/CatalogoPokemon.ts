@@ -4,4 +4,5 @@ export interface Pokeresumo {
   tipos: string[];
   altura: number;
   peso: number;
+
 }
