@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { Pokeresumo } from '../models/CatalogoPokemon';
 
-const URL_Database = `./pokedex.JSON`;
+const URL_Database = `./pc_box.JSON`;
 
 export async function savePokemon(pokemon: Pokeresumo): Promise<void> {
   const pokemonsRegistrados = await readFile(URL_Database, { encoding: 'utf-8' });
